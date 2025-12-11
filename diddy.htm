@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voltage Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --voltage-bg: #08080e;
+            --voltage-card: #0f0f18;
+            --neon-blue: #00a3ff;
+            --neon-light-blue: #00d4ff;
+            --neon-dark-blue: #0066cc;
+            --text-main: #f0f0f5;
+            --text-dim: #8888a0;
+            --accent-glow: rgba(0, 163, 255, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: transparent;
+            color: var(--text-main);
+            overflow: hidden;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .hidden { display: none !important; }
+
+        .header-container {
+            position: absolute;
+            top: 15vh;
+            left: 5vw;
+            width: 380px;
+            visibility: visible;
+        }
+
+        .header-image {
+            width: 100%;
+            height: 110px;
+            background: linear-gradient(135deg, rgba(0, 40, 80, 0.95), rgba(0, 20, 50, 0.95));
+            background-image: url('https://iili.io/futNGSa.md.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1.5px solid rgba(0, 163, 255, 0.3);
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(0, 163, 255, 0.1),
+                inset 0 -2px 20px rgba(0, 163, 255, 0.05);
+        }
+
+        .header-glow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-light-blue), var(--neon-dark-blue));
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .voltage-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Chakra Petch', monospace;
+            font-size: 46px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            background: linear-gradient(135deg, var(--neon-light-blue) 0%, var(--neon-blue) 50%, var(--neon-dark-blue) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 25px rgba(0, 163, 255, 0.6));
+        }
+
+        .menu-container {
+            position: absolute;
+            top: calc(15vh + 110px + 14px);
+            left: 5vw;
+            width: 380px;
+            background: var(--voltage-card);
+            border-radius: 20px;
+            border: 1.5px solid rgba(0, 163, 255, 0.25);
+            box-shadow: 
+                0 15px 50px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(0, 163, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            display: flex;
+            flex-direction: column;
+            visibility: hidden;
+            overflow: hidden;
+        }
+
+        .breadcrumb-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 18px;
+            background: rgba(0, 0, 0, 0.3);
+            font-size: 10px;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        
+        #breadcrumb { 
+            color: var(--neon-orange);
+        }
+        
+        #option-counter { 
+            color: var(--neon-blue);
+            font-weight: 700;
+        }
+
+        .menu-items {
+            list-style: none;
+            position: relative;
+            height: 380px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 8px;
+        }
+
+        .menu-items::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .menu-items::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .menu-items::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--neon-blue), var(--neon-orange));
+            border-radius: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 14px;
+            position: relative;
+            height: 38px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            margin-bottom: 3px;
+        }
+        
+        .menu-item:hover {
+            background: rgba(0, 163, 255, 0.08);
+            transform: translateX(2px);
+        }
+
+        .selection-highlight {
+            position: absolute;
+            left: 8px;
+            top: 0;
+            transform: translateY(4px);
+            width: calc(100% - 16px);
+            height: 45px;
+            background: linear-gradient(190deg, rgba(0, 163, 255, 0.15), rgba(255, 107, 0, 0.08));
+            border-radius: 12px;
+            border-left: 3px solid var(--neon-blue);
+            box-shadow: 
+                0 0 20px rgba(0, 163, 255, 0.2),
+                inset 0 0 20px rgba(0, 163, 255, 0.05);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .item-content {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .item-label { 
+            flex-grow: 1;
+            letter-spacing: 0.3px;
+        }
+        
+        .item-value { 
+            color: var(--text-main); 
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .slider-bar {
+            width: 100px;
+            height: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .slider-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-orange));
+            border-radius: 10px;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+        
+        .slider-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+
+        .footer {
+            padding: 12px 18px;
+            background: var(--voltage-card);
+            border: 1.5px solid rgba(0, 163, 255, 0.25);
+            border-radius: 20px;
+            min-height: 48px;
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.5;
+            box-shadow: 
+                0 10px 40px rgba(0, 0, 0, 0.7),
+                0 0 20px rgba(0, 163, 255, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        .footer-container {
+            position: absolute;
+            top: calc(16vh + 380px + 110px + 38px + 14px);
+            left: 5vw;
+            width: 380px;
+            visibility: visible;
+        }
+
+        #notification-container { 
+            position: fixed; 
+            bottom: 22px; 
+            right: 22px; 
+            z-index: 9999; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+        }
+        
+        .notification { 
+            background: var(--voltage-card);
+            border: 1.5px solid var(--neon-blue);
+            color: var(--text-main); 
+            padding: 12px 18px; 
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.7),
+                0 0 20px var(--accent-glow);
+            opacity: 0; 
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards, slideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) 2.7s forwards;
+        }
+        
+        @keyframes slideIn { 
+            from { transform: translateX(120%); opacity: 0; } 
+            to { transform: translateX(0); opacity: 1; } 
+        }
+        
+        @keyframes slideOut { 
+            from { transform: translateX(0); opacity: 1; } 
+            to { transform: translateX(120%); opacity: 0; } 
+        }
+        
+        .input-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 10000;
+            pointer-events: none;
+        }
+        
+        .input-box {
+            background: var(--voltage-card);
+            border-radius: 20px;
+            border: 1.5px solid var(--neon-blue);
+            width: 500px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.9),
+                0 0 40px var(--accent-glow);
+            overflow: hidden;
+            margin-bottom: 30px;
+            pointer-events: auto;
+        }
+        
+        .input-header {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .input-header h3 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--neon-blue);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        
+        .input-body {
+            padding: 22px;
+        }
+        
+        .input-box input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1.5px solid rgba(0, 163, 255, 0.3);
+            color: var(--text-main);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .input-box input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 3px rgba(0, 163, 255, 0.1), 0 0 20px var(--accent-glow);
+        }
+        
+        .input-box input::placeholder {
+            color: var(--text-dim);
+        }
+        
+        .input-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        
+        .input-button {
+            padding: 10px 22px;
+            border-radius: 12px;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-button.cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+        
+        .input-button.cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .input-button.confirm {
+            background: var(--neon-blue);
+            color: #000000;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+        
+        .input-button.confirm:hover {
+            background: var(--neon-light-blue);
+            box-shadow: 0 6px 20px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        .jiggy-status-banner {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            padding: 10px 18px;
+            background: var(--voltage-card);
+            border-radius: 16px;
+            border: 1.5px solid var(--neon-blue);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.6),
+                0 0 20px var(--accent-glow);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--neon-blue);
+            font-family: 'Chakra Petch', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+        }
+
+        .checkbox-indicator {
+            font-size: 16px;
+        }
+        .checkbox-indicator.checked { 
+            color: var(--neon-blue);
+            filter: drop-shadow(0 0 4px var(--accent-glow));
+        }
+        .checkbox-indicator.unchecked { color: var(--text-dim); }
+
+        .multi-option-value {
+            color: var(--text-main);
+            font-weight: 700;
+            min-width: 90px;
+            text-align: center;
+        }
+        .multi-option-arrow {
+            font-weight: 700;
+            color: var(--neon-orange);
+            font-size: 16px;
+        }
+
+        .status-on { 
+            color: var(--neon-blue); 
+            font-weight: 700;
+            filter: drop-shadow(0 0 4px var(--accent-glow));
+        }
+        .status-off { color: #ff4466; font-weight: 700; }
+        .status-unknown { color: var(--neon-orange); font-weight: 700; }
+
+        .organizer-item {
+            padding: 10px 20px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--neon-orange);
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            background: rgba(255, 107, 0, 0.06);
+            border-radius: 12px;
+            margin: 8px 8px 6px;
+            pointer-events: none;
+            height: auto;
+            border-left: 2px solid var(--neon-orange);
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--neon-blue);
+            font-weight: 700;
+        }
+
+        .chevron {
+            color: var(--neon-blue);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="notification-container"></div>
+<div class="input-overlay hidden" id="input-overlay"></div>
+
+<div class="header-container" id="header-container">
+    <div class="header-image">
+        <div class="voltage-logo"></div>
+        <div class="header-glow"></div>
+    </div>
+</div>
+
+<div class="menu-container" id="menu-container">
+    <div class="breadcrumb-bar">
+        <span id="breadcrumb"></span>
+        <span id="option-counter"></span>
+    </div>
+    <ul class="menu-items" id="menu-items">
+        <div class="selection-highlight" id="selection-highlight"></div>
+    </ul>
+</div>
+
+<div class="footer-container" id="footer-container">
+    <div class="footer" id="footer"></div>
+</div>
+
+<div class="jiggy-status-banner" id="jiggy-status-banner">
+    VOLTAGE
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuItemsEl = document.getElementById('menu-items');
+        const breadcrumbEl = document.getElementById('breadcrumb');
+        const counterEl = document.getElementById('option-counter');
+        const footerEl = document.getElementById('footer');
+        let highlightEl = document.getElementById('selection-highlight');
+        const notificationContainer = document.getElementById('notification-container');
+        const inputOverlay = document.getElementById('input-overlay');
+        const menuContainer = document.getElementById('menu-container');
+        const banner = document.getElementById('jiggy-status-banner');
+
+        let currentMenuId = 'main';
+        let selectedIndex = 0;
+        let currentState = null;
+        let currentTabData = null;
+        let welcomeMessageShown = false;
+        let isInSubMenu = false;
+        const ITEM_HEIGHT = 38;
+
+        const defaultMenuData = {
+            main: {
+                title: 'Loading Voltage Menu...',
+                items: [
+                    { label: 'Loading Menu', target: 'self', description: 'The Menu Is Loaded, Press Enter To Open.' },
+                ]
+            }
+        };
+
+        function safeEncode(text) {
+            if (!text || typeof text !== 'string') return '';
+            return text.replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notificationContainer.appendChild(notification);
+            setTimeout(() => { notification.remove(); }, 3000);
+        }
+        
+        const primaryKeyHandler = (e) => {
+            if (!document.getElementById('input-overlay').classList.contains('hidden')) {
+                return; 
+            }
+            handleMenuInput(e);
+        };
+
+        function showInputPrompt(title, placeholder, callback, isKeybind = false) {
+            inputOverlay.innerHTML = `
+                <div class="input-box">
+                    <div class="input-header">
+                        <h3>${title}</h3>
+                    </div>
+                    <div class="input-body">
+                        <input type="text" id="prompt-input" placeholder="${placeholder}" ${isKeybind ? 'readonly' : ''} autofocus>
+                        <div class="input-footer">
+                            <button class="input-button cancel" id="cancel-btn">Cancel</button>
+                            <button class="input-button confirm" id="confirm-btn">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            inputOverlay.classList.remove('hidden');
+            const inputField = document.getElementById('prompt-input');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const confirmBtn = document.getElementById('confirm-btn');
+            
+            setTimeout(() => inputField.focus(), 100);
+            
+            const close = () => {
+                inputOverlay.classList.add('hidden');
+                document.onkeydown = primaryKeyHandler;
+                
+                if (window.parent) {
+                    window.parent.postMessage({ 
+                        action: 'inputOverlayClosed'
+                    }, '*');
+                }
+            };
+        
+            const confirm = () => {
+                const value = inputField.value;
+                callback(value);
+                
+                if (window.parent) {
+                    window.parent.postMessage({ 
+                        action: 'inputOverlaySubmit',
+                        value: value
+                    }, '*');
+                }
+                close();
+            };
+        
+            cancelBtn.onclick = close;
+            confirmBtn.onclick = confirm;
+        
+            inputField.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    confirm();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    close();
+                }
+            };
+            
+            document.onkeydown = null;
+        }
+
+        function getSelectableItems(items) {
+            return items.filter(item => item.type !== 'organizer');
+        }
+
+        function renderTabContents(tabData) {
+            if (!tabData || !tabData.items) return;
+            
+            isInSubMenu = true;
+            currentTabData = tabData;
+            
+            menuItemsEl.innerHTML = `<div class="selection-highlight" id="selection-highlight"></div>`;
+            highlightEl = document.getElementById('selection-highlight');
+            
+            breadcrumbEl.textContent = tabData.title || 'Menu';
+            
+            const backItem = document.createElement('li');
+            backItem.className = 'menu-item';
+            backItem.setAttribute('data-item-type', 'back');
+            backItem.innerHTML = `
+                <div class="item-content">
+                    <span class="item-label back-button"><i class="fa-solid fa-arrow-left"></i> Back</span>
+                </div>`;
+            menuItemsEl.appendChild(backItem);
+            
+            let selectableCount = 1;
+            
+            tabData.items.forEach((item, index) => {
+                if (item.type === 'organizer') {
+                    const organizerEl = document.createElement('li');
+                    organizerEl.className = 'organizer-item';
+                    organizerEl.innerHTML = `<span>${safeEncode(item.label || 'Unknown')}</span>`;
+                    menuItemsEl.appendChild(organizerEl);
+                    return;
+                }
+                
+                const menuItemEl = document.createElement('li');
+                menuItemEl.className = 'menu-item';
+                menuItemEl.setAttribute('data-item-index', index);
+                
+                let content = `<div class="item-content">`;
+                const safeLabel = safeEncode(item.label || 'Unknown');
+                content += `<span class="item-label">${safeLabel}</span>`;
+                
+                switch (item.type) {
+                    case 'checkbox':
+                        const isChecked = item.state === true || item.state === 'ON';
+                        const iconClass = isChecked ? 'fa-solid fa-square-check' : 'fa-regular fa-square';
+                        const colorClass = isChecked ? 'checked' : 'unchecked';
+                        content += `<div class="item-value"><i class="checkbox-indicator ${colorClass} ${iconClass}"></i></div>`;
+                        break;
+                        
+                    case 'slider':
+                        const min = item.min || 0;
+                        const max = item.max || 100;
+                        const value = item.value || min;
+                        const percent = ((value - min) / (max - min)) * 100;
+                        content += `
+                            <div class="item-value slider-container">
+                                <span>[${safeEncode(String(value))}]</span>
+                                <div class="slider-bar">
+                                    <div class="slider-fill" style="width: ${percent}%"></div>
+                                </div>
+                            </div>`;
+                        break;
+                        
+                    case 'multioption':
+                        const contents = item.contents || [];
+                        const currentIndex = (item.current || 1) - 1;
+                        const currentValue = contents[currentIndex] || 'N/A';
+                        content += `
+                            <div class="item-value">
+                                <span class="multi-option-arrow">&lt;</span>
+                                <span class="multi-option-value">${safeEncode(currentValue)}</span>
+                                <span class="multi-option-arrow">&gt;</span>
+                            </div>`;
+                        break;
+                        
+                    case 'input':
+                        content += `<div class="item-value"><i class="fa-solid fa-keyboard"></i></div>`;
+                        break;
+                        
+                    default:
+                        const isToggleOrState = (item.type === 'toggle' || (item.label && (item.label.toLowerCase().includes('toggle') || item.label.toLowerCase().includes('enabled'))));
+                        
+                        if (isToggleOrState && item.state !== undefined) {
+                            const statusClass = item.state === 'ON' ? 'status-on' : (item.state === '' || item.state === 'OFF' ? 'status-off' : 'status-unknown');
+                            const statusText = item.state || 'OFF';
+                            content += `<span class="${statusClass}">${safeEncode(statusText)}</span>`;
+                        }
+                        break;
+                }
+                
+                content += `</div>`;
+                menuItemEl.innerHTML = content;
+                menuItemsEl.appendChild(menuItemEl);
+                selectableCount++;
+            });
+            
+            selectedIndex = (currentState && currentState.selection) ? currentState.selection.index : 0;
+            
+            counterEl.textContent = `${selectedIndex + 1} / ${selectableCount}`;
+            updateHighlight();
+        }
+
+        function renderMainMenu(state) {
+            if (!state || !state.tabs) return;
+            
+            isInSubMenu = false;
+            currentState = state;
+            currentTabData = null;
+            
+            menuItemsEl.innerHTML = `<div class="selection-highlight" id="selection-highlight"></div>`;
+            highlightEl = document.getElementById('selection-highlight');
+            
+            breadcrumbEl.textContent = 'Main Menu';
+            
+            state.tabs.forEach((tabData, index) => {
+                const menuItemEl = document.createElement('li');
+                menuItemEl.className = 'menu-item';
+                menuItemEl.setAttribute('data-tab-index', index);
+                
+                let content = `<div class="item-content">`;
+                content += `<span class="item-label">${safeEncode(tabData.title || `Tab ${index + 1}`)}</span>`;
+                content += `<i class="chevron fa-solid fa-chevron-right"></i>`;
+                content += `</div>`;
+                
+                menuItemEl.innerHTML = content;
+                menuItemsEl.appendChild(menuItemEl);
+            });
+            
+            selectedIndex = state.activeTab || 0;
+            counterEl.textContent = `${selectedIndex + 1} / ${state.tabs.length}`;
+            updateHighlight();
+        }
+        
+        function updateHighlight() {
+            const menuItems = Array.from(menuItemsEl.querySelectorAll('.menu-item'));
+            
+            if (menuItems.length === 0) return;
+            if (selectedIndex >= menuItems.length) selectedIndex = menuItems.length - 1;
+            if (selectedIndex < 0) selectedIndex = 0;
+            
+            const selectedElement = menuItems[selectedIndex];
+            if (!selectedElement) return;
+            
+            const itemHeight = selectedElement.offsetHeight;
+            const actualTop = selectedElement.offsetTop;
+            const itemBottom = actualTop + itemHeight;
+            const scrollTop = menuItemsEl.scrollTop;
+            const containerHeight = menuItemsEl.clientHeight;
+            
+            if (actualTop < scrollTop) {
+                menuItemsEl.scrollTop = actualTop;
+            } else if (itemBottom > scrollTop + containerHeight) {
+                menuItemsEl.scrollTop = itemBottom - containerHeight;
+            }
+            
+            highlightEl.style.top = `${actualTop}px`;
+            highlightEl.style.height = `${itemHeight}px`;
+            
+            if (isInSubMenu && currentTabData) {
+                const currentItem = menuItems[selectedIndex];
+                if (currentItem) {
+                    const itemIndex = currentItem.getAttribute('data-item-index');
+                    if (itemIndex !== null) {
+                        const item = currentTabData.items[parseInt(itemIndex)];
+                        footerEl.textContent = item?.description || currentTabData.description || '';
+                    } else {
+                        footerEl.textContent = 'Return to main menu';
+                    }
+                }
+            } else if (currentState) {
+                const activeTab = currentState.tabs[selectedIndex];
+                footerEl.textContent = activeTab ? (activeTab.description || `Select ${activeTab.title}`) : '';
+            }
+            
+            counterEl.textContent = `${selectedIndex + 1} / ${menuItems.length}`;
+        }
+
+        menuItemsEl.addEventListener('scroll', () => {
+        }, { passive: true });
+
+        function handleMenuInput(e) {
+            if (isInSubMenu) {
+                e.preventDefault();
+                const menuItems = menuItemsEl.querySelectorAll('.menu-item');
+                const totalItems = menuItems.length;
+
+                switch (e.key) {
+                    case 'ArrowUp':
+                        selectedIndex = (selectedIndex - 1 + totalItems) % totalItems;
+                        updateHighlight();
+                        if (window.parent) {
+                            const currentItem = menuItems[selectedIndex];
+                            const itemIndex = parseInt(currentItem.getAttribute('data-item-index'));
+                            if (!isNaN(itemIndex)) {
+                                window.parent.postMessage({ action: 'select', itemIndex: itemIndex, isContentPanel: true }, '*');
+                            }
+                        }
+                        break;
+                    case 'ArrowDown':
+                        selectedIndex = (selectedIndex + 1) % totalItems;
+                        updateHighlight();
+                        if (window.parent) {
+                            const currentItem = menuItems[selectedIndex];
+                            const itemIndex = parseInt(currentItem.getAttribute('data-item-index'));
+                            if (!isNaN(itemIndex)) {
+                                window.parent.postMessage({ action: 'select', itemIndex: itemIndex, isContentPanel: true }, '*');
+                            }
+                        }
+                        break;
+                    case 'Enter':
+                        if (selectedIndex === 0) {
+                            renderMainMenu(currentState);
+                        } else {
+                            const currentItem = menuItems[selectedIndex];
+                            const itemIndex = parseInt(currentItem.getAttribute('data-item-index'));
+                            const item = currentTabData.items[itemIndex];
+                            
+                            if (item.type === 'input') {
+                                showInputPrompt(`Enter ${item.label}`, item.label, (result) => {
+                                    if (result && window.parent) {
+                                        window.parent.postMessage({ 
+                                            action: 'inputSubmit', 
+                                            itemIndex: itemIndex, 
+                                            value: result
+                                        }, '*');
+                                    }
+                                });
+                            } else {
+                                if (window.parent) {
+                                    window.parent.postMessage({ 
+                                        action: 'activate', 
+                                        itemIndex: itemIndex, 
+                                        isContentPanel: true 
+                                    }, '*');
+                                }
+                            }
+                        }
+                        break;
+                    case 'Backspace':
+                    case 'Escape':
+                        renderMainMenu(currentState);
+                        break;
+                }
+                return;
+            }
+            
+            if (currentState) {
+                e.preventDefault();
+                const menuItems = currentState.tabs;
+
+                switch (e.key) {
+                    case 'ArrowUp':
+                        selectedIndex = (selectedIndex - 1 + menuItems.length) % menuItems.length;
+                        updateHighlight();
+                        if (window.parent) {
+                            window.parent.postMessage({ action: 'select', tabIndex: selectedIndex, isContentPanel: false }, '*');
+                        }
+                        break;
+                    case 'ArrowDown':
+                        selectedIndex = (selectedIndex + 1) % menuItems.length;
+                        updateHighlight();
+                        if (window.parent) {
+                            window.parent.postMessage({ action: 'select', tabIndex: selectedIndex, isContentPanel: false }, '*');
+                        }
+                        break;
+                    case 'Enter':
+                        if (window.parent) {
+                            window.parent.postMessage({ action: 'select', tabIndex: selectedIndex, isContentPanel: false }, '*');
+                            window.parent.postMessage({ action: 'activate', tabIndex: selectedIndex, isContentPanel: false }, '*');
+                        }
+                        renderTabContents(currentState.tabs[selectedIndex]);
+                        break;
+                    case 'Backspace':
+                    case 'Escape':
+                        if (window.parent) {
+                            window.parent.postMessage({ action: 'hide' }, '*');
+                        }
+                        break;
+                }
+                return;
+            }
+        }
+        
+        window.addEventListener("message", (event) => {
+            const { action, data } = event.data;
+            
+            if (action === "update" || action === "show") {
+                if (data) {
+                    currentState = data;
+                    
+                    if (data.isContentPanelOpen && data.tabs && data.tabs[data.activeTab]) {
+                        renderTabContents(data.tabs[data.activeTab]);
+                    } else {
+                        renderMainMenu(data);
+                    }
+                    
+                    menuContainer.style.visibility = 'visible';
+                    if (action === "show" && !welcomeMessageShown) {
+                        welcomeMessageShown = true;
+                        showNotification("Voltage Menu loaded successfully");
+                    }
+                }
+            }
+            
+            if (action === 'hide') {
+                menuContainer.style.visibility = 'hidden';
+            }
+        
+            if (action === 'updateBanner') {
+                const headerImage = document.querySelector('.header-image');
+                if (headerImage) {
+                    headerImage.style.backgroundImage = `url('${data.url}')`;
+                }
+            }
+        
+            if (action === 'updatePosition') {
+                const menuContainer = document.getElementById('menu-container');
+                const headerContainer = document.getElementById('header-container');
+                const footerContainer = document.getElementById('footer-container');
+                
+                menuContainer.style.left = `${data.x}px`;
+                menuContainer.style.top = `${data.y}px`;
+                menuContainer.style.position = 'fixed';
+                
+                headerContainer.style.left = `${data.x}px`;
+                headerContainer.style.top = `${data.y - 124}px`;
+                headerContainer.style.position = 'fixed';
+                
+                footerContainer.style.left = `${data.x}px`;
+                footerContainer.style.top = `${data.y + menuContainer.offsetHeight + 14}px`;
+                footerContainer.style.position = 'fixed';
+            }
+            
+            if (action === 'updateColors') {
+                const root = document.documentElement;
+                if (data.primary) {
+                    root.style.setProperty('--neon-blue', data.primary);
+                }
+                if (data.border) {
+                    root.style.setProperty('--neon-orange', data.border);
+                }
+                if (data.background) {
+                    root.style.setProperty('--voltage-card', data.background);
+                }
+            }
+            
+            if (action === 'showInputPrompt') {
+                showInputPrompt(data.title, data.placeholder, (result) => {
+                    if (window.parent) {
+                        window.parent.postMessage({ 
+                            action: 'inputSubmit', 
+                            itemIndex: data.itemIndex,
+                            value: result
+                        }, '*');
+                    }
+                }, data.isKeybind || false);
+            }
+        });
+        
+        document.onkeydown = primaryKeyHandler;
+        
+        const menu = defaultMenuData[currentMenuId];
+        breadcrumbEl.textContent = menu.title;
+        menuItemsEl.innerHTML = `<div class="selection-highlight" id="selection-highlight"></div>`;
+        highlightEl = document.getElementById('selection-highlight');
+        
+        menu.items.forEach((item) => {
+            const menuItemEl = document.createElement('li');
+            menuItemEl.className = 'menu-item';
+            menuItemEl.innerHTML = `<div class="item-content"><span class="item-label">${item.label}</span></div>`;
+            menuItemsEl.appendChild(menuItemEl);
+        });
+        
+        selectedIndex = 0;
+        highlightEl.style.top = '0px';
+        counterEl.textContent = '1 / 1';
+        footerEl.textContent = menu.items[0].description;
+        
+        menuContainer.style.visibility = 'visible';
+        
+        const headerImage = document.querySelector('.header-image');
+        const bannerEl = document.getElementById('jiggy-status-banner');
+
+        const img = new Image();
+        img.onload = () => {
+        };
+        img.onerror = () => {
+        };
+        img.src = 'https://freeimage.host/i/futNGSa';
+    });
+</script>
+
+</body>
+</html>
